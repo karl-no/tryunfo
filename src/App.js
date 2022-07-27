@@ -17,10 +17,12 @@ class App extends React.Component {
       cardTrunfo: false,
       isSaveButtonDisabled: true,
       cardCollection: [],
+      hasTrunfo: false,
     };
 
     this.onInputChange = this.onInputChange.bind(this);
     this.onSaveButtonClick = this.onSaveButtonClick.bind(this);
+    this.isItTrunfo = this.isItTrunfo.bind(this);
   }
 
   onInputChange({ target }) {
@@ -60,8 +62,10 @@ class App extends React.Component {
         cardImage: '',
         cardRare: 'normal',
         cardTrunfo: false,
+        hasTrunfo: false,
         isSaveButtonDisabled: true,
       });
+      this.isItTrunfo();
     });
   }
 
@@ -112,6 +116,12 @@ class App extends React.Component {
     }
   }
 
+  isItTrunfo() {
+    const { cardCollection } = this.state;
+    const hasTrunfo = cardCollection.some((carta) => carta.cardTrunfo);
+    this.setState({ hasTrunfo });
+  }
+
   render() {
     const {
       cardName,
@@ -123,6 +133,7 @@ class App extends React.Component {
       cardRare,
       cardTrunfo,
       isSaveButtonDisabled,
+      hasTrunfo,
     } = this.state;
 
     return (
@@ -138,6 +149,7 @@ class App extends React.Component {
           cardImage={ cardImage }
           cardRare={ cardRare }
           cardTrunfo={ cardTrunfo }
+          hasTrunfo={ hasTrunfo }
           isSaveButtonDisabled={ isSaveButtonDisabled }
           onSaveButtonClick={ this.onSaveButtonClick }
         />
