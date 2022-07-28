@@ -1,6 +1,7 @@
 import React from 'react';
 import Form from './components/Form';
 import Card from './components/Card';
+import './App.css';
 
 class App extends React.Component {
   constructor(props) {
@@ -29,17 +30,29 @@ class App extends React.Component {
     const { name } = target;
     const value = target.type === 'checkbox' ? target.checked : target.value;
 
-    this.setState({
-      [name]: value,
-    }, () => {
-      this.saveButton();
-    });
+    this.setState(
+      {
+        [name]: value,
+      },
+      () => {
+        this.saveButton();
+      },
+    );
   }
 
   onSaveButtonClick(event) {
     event.preventDefault();
-    const { cardName, cardDescription, cardAttr1, cardAttr2, cardAttr3,
-      cardImage, cardRare, cardTrunfo, cardCollection } = this.state;
+    const {
+      cardName,
+      cardDescription,
+      cardAttr1,
+      cardAttr2,
+      cardAttr3,
+      cardImage,
+      cardRare,
+      cardTrunfo,
+      cardCollection,
+    } = this.state;
 
     const carta = {
       cardName,
@@ -70,11 +83,7 @@ class App extends React.Component {
   }
 
   attrMax = () => {
-    const {
-      cardAttr1,
-      cardAttr2,
-      cardAttr3,
-    } = this.state;
+    const { cardAttr1, cardAttr2, cardAttr3 } = this.state;
     const maxPointsAttr = 90;
     if (cardAttr1 > maxPointsAttr || cardAttr1 < 0) {
       return false;
@@ -86,7 +95,7 @@ class App extends React.Component {
       return false;
     }
     return true;
-  }
+  };
 
   saveButton = () => {
     const {
@@ -103,17 +112,27 @@ class App extends React.Component {
     const attrTotal = parseFloat(cardAttr1)
       + parseFloat(cardAttr2) + parseFloat(cardAttr3);
 
-    const notAllowed = (
-      cardName.length === 0
+    const notAllowed = cardName.length === 0
       || cardDescription.length === 0
       || cardImage.length === 0
-      || cardRare.length === 0);
+      || cardRare.length === 0;
 
     if (maxTotalSum < attrTotal || notAllowed || !this.attrMax()) {
       this.setState({ isSaveButtonDisabled: true });
     } else {
       this.setState({ isSaveButtonDisabled: false });
     }
+  };
+
+  deleteCard(callback) {
+    const { cardCollection } = this.state;
+    const collection = cardCollection.filter((obj) => obj.cardName !== callback);
+
+    this.setState({
+      cardCollection: collection,
+    }, () => {
+      this.isItTrunfo();
+    });
   }
 
   isItTrunfo() {
@@ -154,29 +173,32 @@ class App extends React.Component {
           isSaveButtonDisabled={ isSaveButtonDisabled }
           onSaveButtonClick={ this.onSaveButtonClick }
         />
-        <Card
-          cardName={ cardName }
-          cardDescription={ cardDescription }
-          cardAttr1={ cardAttr1 }
-          cardAttr2={ cardAttr2 }
-          cardAttr3={ cardAttr3 }
-          cardImage={ cardImage }
-          cardRare={ cardRare }
-          cardTrunfo={ cardTrunfo }
-        />
-        <h2>Todas as cartas</h2>
-        {cardCollection.map((card, index) => (
-          <Card
-            key={ index }
-            cardName={ card.cardName }
-            cardDescription={ card.cardDescription }
-            cardAttr1={ card.cardAttr1 }
-            cardAttr2={ card.cardAttr2 }
-            cardAttr3={ card.cardAttr3 }
-            cardImage={ card.cardImage }
-            cardRare={ card.cardRare }
-            cardTrunfo={ card.cardTrunfo }
-          />))}
+        <ul>
+          <h2>Todas as cartas</h2>
+          {
+            cardCollection.map((callback) => (
+              <li key={ callback.cardName + callback.cardDescription }>
+                <Card
+                  cardName={ callback.cardName }
+                  cardDescription={ callback.cardDescription }
+                  cardAttr1={ callback.cardAttr1 }
+                  cardAttr2={ callback.cardAttr2 }
+                  cardAttr3={ callback.cardAttr3 }
+                  cardImage={ callback.cardImage }
+                  cardRare={ callback.cardRare }
+                  cardTrunfo={ callback.cardTrunfo }
+                />
+                <button
+                  type="button"
+                  data-testid="delete-button"
+                  onClick={ () => this.deleteCard(callback.cardName) }
+                >
+                  Excluir
+                </button>
+              </li>
+            ))
+          }
+        </ul>
       </div>
     );
   }
